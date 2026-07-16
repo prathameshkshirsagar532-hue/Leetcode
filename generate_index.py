@@ -175,3 +175,73 @@ def build_index():
             const searchVal = searchInput.value.toLowerCase().trim();
             const selectedTopics = Array.from(document.querySelectorAll('.topic-cb:checked')).map(cb => cb.value);
             const selectedDiffs = Array.from(document.querySelectorAll('.diff-cb:checked')).map(cb => cb.value);
+            const fromNum = parseInt(fromInput.value) || 0;
+const toNum = parseInt(toInput.value) || Infinity;
+
+// Data filter karne ki main logic
+filteredData = data.filter(item => {
+    const matchesSearch = item.number.includes(searchVal) || item.title.toLowerCase().includes(searchVal);
+    const matchesTopic = selectedTopics.length === 0 || selectedTopics.includes(item.topic);
+    const matchesDiff = selectedDiffs.length === 0 || selectedDiffs.includes(item.difficulty);
+    const matchesRange = item.num_int >= fromNum && item.num_int <= toNum;
+    
+    return matchesSearch && matchesTopic && matchesDiff && matchesRange;
+});
+
+visibleCount = 50; 
+renderTable();
+saveState();
+
+// --- EVENT LISTENERS (CLICK CONTROLS) ---
+
+document.querySelectorAll('.checkbox-container').forEach(container => {
+    container.addEventListener('click', (e) => {
+        const label = e.target.closest('.checkbox-label');
+        if (!label) return;
+        
+        const cb = label.querySelector('input');
+        if (e.target !== cb) { 
+            cb.checked = !cb.checked; 
+        }
+        label.classList.toggle('active', cb.checked);
+        filterData();
+    });
+});
+
+// Infinite Scroll Loading Logic
+window.addEventListener('scroll', () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+        if (visibleCount < filteredData.length) { 
+            visibleCount += 50; 
+            renderTable(); 
+        }
+    }
+});
+
+// Buttons triggers
+document.getElementById('apply-range').addEventListener('click', filterData);
+
+document.getElementById('reset-range').addEventListener('click', () => {
+    fromInput.value = ''; 
+    toInput.value = ''; 
+    searchInput.value = '';
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('.checkbox-label').forEach(lbl => lbl.classList.remove('active'));
+    localStorage.removeItem('codingVaultState');
+    filterData();
+});
+
+// Performance Debounce Function
+function debounce(func, delay) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+searchInput.addEventListener('input', debounce(filterData, 150));
+
+// Dashboard Start Hooks
+loadState();  
+filterData();
