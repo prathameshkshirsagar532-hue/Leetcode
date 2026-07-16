@@ -32,7 +32,7 @@ def build_index():
     questions = [r for r in results if r is not None]
     questions.sort(key=lambda x: x['num_int'])
     
-    # Highly Optimized HTML Web Application Code
+    # Yahan se HTML Dashboard code shuru hoga
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -108,7 +108,6 @@ def build_index():
         </thead>
         <tbody id="table-body"></tbody>
     </table>
-
     <script>
         const data = {json.dumps(questions)};
         let filteredData = [...data];
@@ -123,8 +122,8 @@ def build_index():
         const topics = [...new Set(data.map(item => item.topic))].sort();
         const difficulties = [...new Set(data.map(item => item.difficulty))].sort();
         
-        document.getElementById('topic-group').innerHTML = topics.map(t => `<label class="checkbox-label" id="lbl-topic-${{t}}"><input type="checkbox" class="topic-cb" value="${{t}}">${{t}}</label>`).join('');
-        document.getElementById('diff-group').innerHTML = difficulties.map(d => `<label class="checkbox-label" id="lbl-diff-${{d}}"><input type="checkbox" class="diff-cb" value="${{d}}">${{d}}</label>`).join('');
+        document.getElementById('topic-group').innerHTML = topics.map(t => `<label class="checkbox-label" id="lbl-topic-\${t}"><input type="checkbox" class="topic-cb" value="\${t}">\${t}</label>`).join('');
+        document.getElementById('diff-group').innerHTML = difficulties.map(d => `<label class="checkbox-label" id="lbl-diff-\${d}"><input type="checkbox" class="diff-cb" value="\${d}">\${d}</label>`).join('');
 
         // --- LOCALSTORAGE LOGIC (SAVE & LOAD STATE) ---
         
@@ -154,20 +153,22 @@ def build_index():
 
             if (state.topics) {{
                 state.topics.forEach(t => {{
-                    const cb = document.querySelector(`.topic-cb[value="${{t}}"]`);
+                    const cb = document.querySelector(`.topic-cb[value="\${t}"]`);
                     if (cb) {{
                         cb.checked = true;
-                        document.getElementById(`lbl-topic-${{t}}`).classList.add('active');
+                        const lbl = document.getElementById(`lbl-topic-\${t}`);
+                        if (lbl) lbl.classList.add('active');
                     }}
                 }});
             }}
 
             if (state.diffs) {{
                 state.diffs.forEach(d => {{
-                    const cb = document.querySelector(`.diff-cb[value="${{d}}"]`);
+                    const cb = document.querySelector(`.diff-cb[value="\${d}"]`);
                     if (cb) {{
                         cb.checked = true;
-                        document.getElementById(`lbl-diff-${{d}}`).classList.add('active');
+                        const lbl = document.getElementById(`lbl-diff-\${d}`);
+                        if (lbl) lbl.classList.add('active');
                     }}
                 }});
             }}
@@ -179,11 +180,11 @@ def build_index():
             const itemsToRender = filteredData.slice(0, visibleCount);
             tbody.innerHTML = itemsToRender.map(item => `
                 <tr>
-                    <td><code>#${{item.number}}</code></td>
-                    <td><span class="badge">${{item.topic}}</span></td>
-                    <td><span class="badge diff-${{item.difficulty.toLowerCase()}}">${{item.difficulty}}</span></td>
-                    <td><strong>${{item.title}}</strong></td>
-                    <td><a href="./${{item.path}}/" target="_blank">View 📄</a></td>
+                    <td><code>#\${item.number}</code></td>
+                    <td><span class="badge">\${item.topic}</span></td>
+                    <td><span class="badge diff-\${item.difficulty.toLowerCase()}">\${item.difficulty}</span></td>
+                    <td><strong>\${item.title}</strong></td>
+                    <td><a href="./\${item.path}/" target="_blank">View 📄</a></td>
                 </tr>
             `).join('');
             document.getElementById('displayed-count').innerText = itemsToRender.length;
@@ -193,4 +194,82 @@ def build_index():
         function filterData() {{
             const searchVal = searchInput.value.toLowerCase().trim();
             const selectedTopics = Array.from(document.querySelectorAll('.topic-cb:checked')).map(cb => cb.value);
-            const selectedDiffs = Array.from(document.querySelectorAll('.diff-cb:checked')).map(cb => cb.value);const fromNum = parseInt(fromInput.value) || 0;const toNum = parseInt(toInput.value) || Infinity;filteredData = data.filter(item => {{const matchesSearch = item.number.includes(searchVal) || item.title.toLowerCase().includes(searchVal);const matchesTopic = selectedTopics.length === 0 || selectedTopics.includes(item.topic);const matchesDiff = selectedDiffs.length === 0 || selectedDiffs.includes(item.difficulty);const matchesRange = item.num_int >= fromNum && item.num_int <= toNum;return matchesSearch && matchesTopic && matchesDiff && matchesRange;}});visibleCount = 50;renderTable();saveState(); // State updated}}// --- EVENT LISTENERS ---document.querySelectorAll('.checkbox-container label').forEach(label => {{const cb = label.querySelector('input');label.addEventListener('click', (e) => {{if (e.target.tagName === 'INPUT') return;cb.checked = !cb.checked;label.classList.toggle('active', cb.checked);filterData();}});}});window.addEventListener('scroll', () => {{if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {{if (visibleCount < filteredData.length) {{visibleCount += 50;renderTable();}}}}}});document.getElementById('apply-range').addEventListener('click', filterData);document.getElementById('reset-range').addEventListener('click', () => {{fromInput.value = '';toInput.value = '';searchInput.value = '';document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);document.querySelectorAll('.checkbox-label').forEach(lbl => lbl.classList.remove('active'));localStorage.removeItem('codingVaultState'); // Clear cachefilterData();}});function debounce(func, delay) {{let timeout;return function(...args) {{clearTimeout(timeout);timeout = setTimeout(() => func.apply(this, args), delay);}};}}searchInput.addEventListener('input', debounce(filterData, 150));// --- INITIAL RUN ---loadState();filterData();"""with open('index.html', 'w', encoding='utf-8') as f:f.write(html_content)print(f"⚡ Turbo & Smart Save Mode Enabled Successfully!")if name == "main":build_index()
+            const selectedDiffs = Array.from(document.querySelectorAll('.diff-cb:checked')).map(cb => cb.value);
+            
+            const fromNum = parseInt(fromInput.value) || 0;
+            const toNum = parseInt(toInput.value) || Infinity;
+
+            filteredData = data.filter(item => {{
+                const matchesSearch = item.number.includes(searchVal) || item.title.toLowerCase().includes(searchVal);
+                const matchesTopic = selectedTopics.length === 0 || selectedTopics.includes(item.topic);
+                const matchesDiff = selectedDiffs.length === 0 || selectedDiffs.includes(item.difficulty);
+                const matchesRange = item.num_int >= fromNum && item.num_int <= toNum;
+
+                return matchesSearch && matchesTopic && matchesDiff && matchesRange;
+            }});
+
+            visibleCount = 50; 
+            renderTable();
+            saveState();
+        }}
+
+        // --- EVENT LISTENERS ---
+
+        document.querySelectorAll('.checkbox-container').forEach(container => {{
+            container.addEventListener('click', (e) => {{
+                const label = e.target.closest('.checkbox-label');
+                if (!label) return;
+                
+                const cb = label.querySelector('input');
+                if (e.target !== cb) {{
+                    cb.checked = !cb.checked;
+                }}
+                label.classList.toggle('active', cb.checked);
+                filterData();
+            }});
+        }});
+
+        window.addEventListener('scroll', () => {{
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {{
+                if (visibleCount < filteredData.length) {{
+                    visibleCount += 50;
+                    renderTable();
+                }}
+            }}
+        }});
+
+        document.getElementById('apply-range').addEventListener('click', filterData);
+        
+        document.getElementById('reset-range').addEventListener('click', () => {{
+            fromInput.value = '';
+            toInput.value = '';
+            searchInput.value = '';
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('.checkbox-label').forEach(lbl => lbl.classList.remove('active'));
+            localStorage.removeItem('codingVaultState');
+            filterData();
+        }});
+
+        function debounce(func, delay) {{
+            let timeout;
+            return function(...args) {{
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            }};
+        }}
+
+        searchInput.addEventListener('input', debounce(filterData, 150));
+
+        // --- INITIAL RUN ---
+        loadState();  
+        filterData(); 
+    </script>
+</body>
+</html>
+"""
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    print("⚡ Complete Code with Persistent Memory Generated Successfully!")
+
+if __name__ == "__main__":
+    build_index()
