@@ -5,6 +5,8 @@ const rawQuestionsData = [
     "topic": "Array",
     "difficulty": "Easy",
     "title": "Two Sum",
-    "path": "0001_Array_Easy_Two_Sum"
+    "path": "0001_Array_Easy_Two_Sum",
+    "sol_file": "",
+    "notes_file": ""
   }
 ];
