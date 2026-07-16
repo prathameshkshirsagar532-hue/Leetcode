@@ -7,11 +7,11 @@ EXCLUDE_DIRS = {'.git', '.github', '.vscode', 'node_modules'}
 def process_folder(folder_name):
     """Har folder ko super fast processing ke liye function"""
     if os.path.isdir(folder_name) and folder_name not in EXCLUDE_DIRS and not folder_name.startswith('.'):
-        parts = folder_name.split('_', 3)
-        if len(parts) >= 4:
+                parts = folder_name.split('_', 3)
+        if len(parts) >= 4 and parts[0].isdigit():
             try:
-                q_num_int = int(parts[0]) # Sorting aur range comparison ke liye int me badalna
-            except ValueError:
+                q_num_int = int(parts[0])
+            except (ValueError, IndexError):
                 q_num_int = 9999
             return {
                 "number": parts[0],
@@ -21,6 +21,7 @@ def process_folder(folder_name):
                 "title": parts[3].replace('_', ' '),
                 "path": folder_name.replace('\\', '/')
             }
+
     return None
 
 def build_index():
