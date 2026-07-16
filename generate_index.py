@@ -1,4 +1,4 @@
-// High-Velocity Application State Interface
+        // High-Velocity Application State Interface
 let state = {
     dataset: typeof rawQuestionsData !== 'undefined' ? rawQuestionsData : [],
     searchQuery: "",
@@ -68,7 +68,11 @@ window.addEventListener('DOMContentLoaded', () => {
     // Auto-Restoration validation anchor
     if (state.selectedId) {
         const cachedItem = state.dataset.find(item => item.number === state.selectedId);
-        if (cachedItem) selectArchItem(cachedItem);
+        if (cachedItem) {
+            selectArchItem(cachedItem);
+        } else {
+            switchPaneTab(state.activeTab);
+        }
     } else {
         switchPaneTab(state.activeTab);
     }
@@ -105,6 +109,14 @@ window.addEventListener('DOMContentLoaded', () => {
             });
             applyStateFilters();
         });
+    }
+
+    // Set up tab event listeners
+    if (elements.tabSol) {
+        elements.tabSol.addEventListener('click', () => switchPaneTab('sol'));
+    }
+    if (elements.tabNotes) {
+        elements.tabNotes.addEventListener('click', () => switchPaneTab('notes'));
     }
 });
 
@@ -190,19 +202,24 @@ function renderListStream(items) {
     items.forEach(item => {
         const card = document.createElement('div');
         card.id = `q-row-${item.number}`;
-        const isActive = state.selectedId === item.number ? 'active-row bg-slate-800/80 border-l-4 border-sky-500' : 'border-l-4 border-transparent';
-        card.className = `p-4 cursor-pointer hover:bg-slate-900/40 flex items-center justify-between gap-4 transition-all ${isActive}`;
         
+        const isSelected = state.selectedId === item.number;
+        const activeClass = isSelected ? 'bg-slate-800/80 border-l-4 border-sky-500' : 'border-l-4 border-transparent';
+        
+        card.className = `p-4 cursor-pointer hover:bg-slate-900/40 transition-all border-b border-slate-800/60 ${activeClass}`;
+        
+        const diffBadge = diffColors[item.difficulty] || 'text-slate-400 bg-slate-500/10 border-slate-500/20';
+
         card.innerHTML = `
-            <div class="flex items-start gap-3 min-w-0"> 
-                <span class="code-font text-xs font-bold text-slate-500 mt-0.5">#${item.number}</span> 
-                <div class="min-w-0"> 
-                    <h4 class="text-sm font-semibold text-slate-200 truncate">${item.title}</h4> 
-                    <div class="flex items-center gap-2 mt-1.5 flex-wrap"> 
-                        <span class="px-2 py-0.5 text-[10px] font-bold rounded border uppercase ${diffColors[item.difficulty] || ''}">${item.difficulty}</span> 
-                        <span class="px-2 py-0.5 text-[10px] font-semibold rounded bg-slate-800 text-slate-400 border border-slate-700/60 uppercase">${item.topic}</span> 
-                    </div> 
-                </div> 
+            <div class="flex items-start justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs font-mono font-bold text-slate-500">#${item.number}</span>
+                        <span class="px-2 py-0.5 text-[10px] font-medium rounded border ${diffBadge}">${item.difficulty}</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-slate-200 truncate">${item.title}</h3>
+                    <p class="text-xs text-slate-400 mt-1 truncate">${item.topic || 'General'}</p>
+                </div>
             </div>
         `;
 
@@ -213,132 +230,112 @@ function renderListStream(items) {
     elements.listStream.appendChild(fragment);
 }
 
-async function selectArchItem(item) {
-    state.selectedId = item.number;
-    // Feature 3: Cache state injection to handle browser reload
-    localStorage.setItem('dashboard_last_q_num', item.number);
-    
-    document.querySelectorAll('[id^="q-row-"]').forEach(r => {
-        r.classList.remove('active-row', 'bg-slate-800/80', 'border-sky-500');
-        r.classList.add('border-transparent');
+function selectArchItem(item) {
+    if (!item) return;
+
+    // Manage UI active rows
+    document.querySelectorAll('[id^="q-row-"]').forEach(row => {
+        row.classList.remove('bg-slate-800/80', 'border-sky-500');
+        row.classList.add('border-transparent');
     });
-    const activeRow = document.getElementById(`q-row-${item.number}`);
-    if (activeRow) {
-        activeRow.classList.add('active-row', 'bg-slate-800/80', 'border-sky-500');
-        activeRow.classList.remove('border-transparent');
-    }
+
+const activeRow = document.getElementById(`q-row-${item.number}`);
+if (activeRow) {
+    activeRow.classList.remove('border-transparent');
+    activeRow.classList.add('bg-slate-800/80', 'border-sky-500');
+}
+
+// Persist identity state
+state.selectedId = item.number;
+localStorage.setItem('dashboard_last_q_num', item.number);
+
+// Update Header Metadata Panel
+if (elements.selectedMeta) {
+    elements.selectedMeta.innerHTML = `
+        <div class="flex items-center gap-3"> 
+            <span class="text-lg font-mono font-black text-slate-400">#${item.number}</span> 
+            <div> 
+                <h2 class="text-base font-bold text-white leading-tight">${item.title}</h2> 
+                <p class="text-xs text-slate-500 font-medium mt-0.5">${item.topic || ''}</p> 
+            </div> 
+        </div>`;
+}
+
+// Process Feature 2: Highlighting Code Logic
+if (elements.codeBlock && item.code) {
+    elements.solFilename.textContent = item.filename || `solution.${item.extension || 'py'}`;
     
-if (elements.blankState) elements.blankState.classList.add('hidden');
-if (elements.selectedMeta) elements.selectedMeta.textContent = `Path: ${item.path}`;
-
-let codeData = "// Code source file missing / not mapped.";
-let notesData = "No markdown documentation available for this architecture.";
-
-const ext = item.sol_file ? item.sol_file.split('.').pop().toLowerCase() : '';
-
-if (elements.solFilename) {
-    elements.solFilename.textContent = item.sol_file ? item.sol_file.split('/').pop() : 'No File';
-}
-
-const fetchPromises = [];
-
-if (item.sol_file) {
-    fetchPromises.push(
-        fetch(item.sol_file)
-            .then(res => res.ok ? res.text() : `// Error: Failed to target source file (${res.status})`)
-            .then(text => { codeData = text; })
-            .catch(e => { codeData = `// Transport Interface Fault: ${e.message}`; })
-    );
-}
-
-if (item.notes_file) {
-    fetchPromises.push(
-        fetch(item.notes_file)
-            .then(res => res.ok ? res.text() : `**Error:** Failed to parse Markdown container (${res.status})`)
-            .then(text => { notesData = text; })
-            .catch(e => { notesData = `_Transport Documentation Fault:_ ${e.message}`; })
-    );
-}
-
-if (fetchPromises.length > 0) {
-    if (elements.codeBlock) elements.codeBlock.textContent = "// Syncing remote components...";
-    await Promise.all(fetchPromises);
-}
-
-if (elements.codeBlock) {
-    elements.codeBlock.textContent = codeData;
-    // Feature 2: Clean mapping implementation without dynamic class accumulation
-    elements.codeBlock.className = "code-font " + (LANGUAGE_CLASS_MAP[ext] || 'language-plaintext');
+    // Remove old language classes
+    elements.codeBlock.className = '';
+    const targetLangClass = LANGUAGE_CLASS_MAP[item.extension] || 'language-plaintext';
+    elements.codeBlock.classList.add(targetLangClass, 'text-xs', 'font-mono');
+    elements.codeBlock.textContent = item.code;
+    
     if (typeof hljs !== 'undefined') {
         hljs.highlightElement(elements.codeBlock);
     }
+} else if (elements.codeBlock) {
+    elements.codeBlock.textContent = '// No code solution provided.';
 }
 
+// Handle Notes Markdown Engine Rendering
 if (elements.markdownBlock) {
-    if (typeof marked !== 'undefined') {
-        elements.markdownBlock.innerHTML = marked.parse(notesData);
+    if (item.notes) {
+        if (typeof marked !== 'undefined') {
+            elements.markdownBlock.innerHTML = marked.parse(item.notes);
+        } else {
+            elements.markdownBlock.textContent = item.notes;
+        }
     } else {
-        elements.markdownBlock.textContent = notesData;
+        elements.markdownBlock.innerHTML = 'No notes compiled for this challenge.';
     }
 }
 
 switchPaneTab(state.activeTab);
 
-function switchPaneTab(targetTab) {
-    state.activeTab = targetTab;
-    localStorage.setItem('dashboard_last_tab', targetTab); // Cache state persistent sync
+function switchPaneTab(tabKey) {
+    state.activeTab = tabKey;
+    localStorage.setItem('dashboard_last_tab', tabKey);
     
-    if (!elements.tabSol || !elements.tabNotes || !elements.paneSol || !elements.paneNotes) return;
+    const activeTabStyle = "border-sky-500 text-sky-400 bg-slate-800/40";
+    const inactiveTabStyle = "border-transparent text-slate-400 hover:text-slate-300 hover:bg-slate-900/40";
     
-    elements.tabSol.classList.remove('active');
-    elements.tabNotes.classList.remove('active');
-    elements.paneSol.classList.add('hidden');
-    elements.paneNotes.classList.add('hidden');
-    
-    if (targetTab === 'sol') {
-        elements.tabSol.classList.add('active');
-        elements.paneSol.classList.remove('hidden');
+    if (tabKey === 'sol') {
+        if (elements.paneSol) elements.paneSol.classList.remove('hidden');
+        if (elements.paneNotes) elements.paneNotes.classList.add('hidden');
+        if (elements.tabSol) elements.tabSol.className = `px-4 py-2 border-b-2 font-medium text-sm transition-all ${activeTabStyle}`;
+        if (elements.tabNotes) elements.tabNotes.className = `px-4 py-2 border-b-2 font-medium text-sm transition-all ${inactiveTabStyle}`;
     } else {
-        elements.tabNotes.classList.add('active');
-        elements.paneNotes.classList.remove('hidden');
+        if (elements.paneSol) elements.paneSol.classList.add('hidden');
+        if (elements.paneNotes) elements.paneNotes.classList.remove('hidden');
+        if (elements.tabSol) elements.tabSol.className = `px-4 py-2 border-b-2 font-medium text-sm transition-all ${inactiveTabStyle}`;
+        if (elements.tabNotes) elements.tabNotes.className = `px-4 py-2 border-b-2 font-medium text-sm transition-all ${activeTabStyle}`;
     }
 }
 
-// Feature 1: Modern Copy-to-Clipboard Action Bridge Injector
+// Feature 1: Global Clipboard Engine Factory
 function injectCopyButtonEngine() {
-    const paneSol = document.getElementById('pane-sol');
-    if (!paneSol) return;
+    const copyBtn = document.getElementById('copy-solution-btn');
+    if (!copyBtn || !elements.codeBlock) return;
     
-    const copyBtn = document.createElement('button');
-    copyBtn.className = "absolute top-20 right-10 bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 hover:border-slate-500 text-slate-300 text-xs px-3 py-1.5 rounded-lg flex items-center gap-2 transition-all z-10 shadow-md font-medium active:scale-95";
-    copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy`;
-    
-    copyBtn.onclick = async () => {
-        if (!elements.codeBlock) return;
-        const targetText = elements.codeBlock.textContent;
-        
+    copyBtn.addEventListener('click', async () => {
+        const textToCopy = elements.codeBlock.textContent;
         try {
-            await navigator.clipboard.writeText(targetText);
-            copyBtn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> Copied!`;
-            copyBtn.classList.add('border-emerald-500/40', 'bg-emerald-950/20');
+            await navigator.clipboard.writeText(textToCopy);
+            const originalHTML = copyBtn.innerHTML;
+            copyBtn.innerHTML = `
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"> 
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path> 
+                </svg> 
+                <span class="text-xs text-emerald-400 font-medium">Copied!</span>`;
+            copyBtn.disabled = true;
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHTML;
+                copyBtn.disabled = false;
+            }, 2000);
         } catch (err) {
-            // Fallback for isolated local testing security contexts
-            const textarea = document.createElement('textarea');
-            textarea.value = targetText;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            copyBtn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> Copied!`;
+            console.error('Failed to copy text: ', err);
         }
-        
-        setTimeout(() => {
-            copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy`;
-            copyBtn.className = "absolute top-20 right-10 bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 hover:border-slate-500 text-slate-300 text-xs px-3 py-1.5 rounded-lg flex items-center gap-2 transition-all z-10 shadow-md font-medium active:scale-95";
-        }, 2000);
-    };
-    
-    // Solution panel contextual absolute parent constraint
-    paneSol.style.position = 'relative';
-    paneSol.appendChild(copyBtn);
+    });
 }
