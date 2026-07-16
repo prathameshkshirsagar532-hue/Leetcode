@@ -8,31 +8,31 @@ def process_folder(folder_name):
     """Har folder ko super fast processing ke liye function"""
     if os.path.isdir(folder_name) and folder_name not in EXCLUDE_DIRS and not folder_name.startswith('.'):
         parts = folder_name.split('_', 3)
-        if len(parts) >= 4 and parts[0].isdigit():
-            try:
-                q_num_int = int(parts[0])
-            except (ValueError, IndexError):
-                q_num_int = 9999
-            return {
-                "number": parts[0],
-                "num_int": q_num_int,
-                "topic": parts[1],
-                "difficulty": parts[2],
-                "title": parts[3].replace('_', ' '),
-                "path": folder_name.replace('\\', '/')
-            }
+        if len(parts) >= 4:
+            if parts[0].isdigit():
+                try:
+                    q_num_int = int(parts[0])
+                except (ValueError, IndexError):
+                    q_num_int = 9999
+                return {
+                    "number": parts[0],
+                    "num_int": q_num_int,
+                    "topic": parts[1],
+                    "difficulty": parts[2],
+                    "title": parts[3].replace('_', ' '),
+                    "path": folder_name.replace('\\', '/')
+                }
     return None
 
 def build_index():
     all_items = os.listdir('.')
-    # Multi-threading se saare folders ko parallelly scan karna
     with ThreadPoolExecutor() as executor:
         results = executor.map(process_folder, all_items)
     
     questions = [r for r in results if r is not None]
     questions.sort(key=lambda x: x['num_int'])
     
-    # Safe multi-line string configuration formatting errors ko rokne ke liye
+    # Base layout header string configuration
     html_start = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,7 +73,7 @@ def build_index():
     <h1>🚀 My State-Saved Coding Vault</h1>
 """
 
-    html_stats = f'<div class="stats">Showing <span id="displayed-count" style="color: #58a6ff; font-weight: bold;">0</span> of <span id="total-count">{len(questions)}</span> Questions</div>'
+    html_stats = '<div class="stats">Showing <span id="displayed-count" style="color: #58a6ff; font-weight: bold;">0</span> of <span id="total-count">' + str(len(questions)) + '</span> Questions</div>'
 
     html_end = """
     <div class="filter-section">
@@ -105,7 +105,7 @@ def build_index():
         <tbody id="table-body"></tbody>
     </table>
     <script>
-"""    html_js_data = f"const data = {json.dumps(questions)};\n"
+"""    html_js_data = "const data = " + json.dumps(questions) + ";\n"
 
     html_js_logic = """        let filteredData = [...data];
         let visibleCount = 50; 
@@ -223,11 +223,11 @@ def build_index():
 </body>
 </html>
 """
+
     full_html = html_start + html_stats + html_end + html_js_data + html_js_logic
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(full_html)
-    print("⚡ Index page generated successfully without formatting bugs!")
+    print("⚡ Stable dashboard generated without any python syntax bugs!")
 
 if __name__ == "__main__":
     build_index()
-
