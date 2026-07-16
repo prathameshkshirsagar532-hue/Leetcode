@@ -4,112 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Ultimate Coding Vault</title>
-    <!-- Tailwind CSS for Ultra-Professional UI -->
     <script src="https://jsdelivr.net"></script>
-    <!-- Highlight.js for Syntax Highlighting -->
     <link rel="stylesheet" href="https://cloudflare.com">
     <script src="https://cloudflare.com"></script>
-    <!-- Marked.js for Rendering Markdown Notes -->
     <script src="https://jsdelivr.net"></script>
+    <style>
+        /* Custom sleek scrollbar for ultra professional layout */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col select-none antialiased">
 
-    <!-- Header Navigation -->
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur px-6 py-4 flex items-center justify-between">
+    <header class="border-b border-slate-900 bg-slate-950/70 backdrop-blur px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <span class="text-xl">🚀</span>
-            <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">My Ultimate Coding Vault</h1>
+            <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-sm shadow-indigo-500/20 shadow-lg">⚡</div>
+            <h1 class="text-base font-black tracking-tight bg-gradient-to-r from-slate-100 via-sky-400 to-indigo-400 bg-clip-text text-transparent">MY ULTIMATE CODING VAULT</h1>
         </div>
-        <div class="text-xs font-mono text-slate-400 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
+        <div class="text-xs font-mono text-slate-400 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800/80 shadow-inner">
             Total Solved: <span id="displayed-count" class="text-sky-400 font-bold">0</span> / <span id="total-count" class="text-slate-500">0</span>
         </div>
     </header>
 
-    <!-- Main Workspace Container -->
     <div class="flex-1 flex overflow-hidden">
-        
-        <!-- Left Sidebar: Advanced Search & Filtering Panels -->
-        <aside class="w-80 border-r border-slate-800 bg-slate-900/20 p-4 flex flex-col gap-4 overflow-y-auto">
-            <!-- Search Bar Input Component -->
+        <aside class="w-80 border-r border-slate-900 bg-slate-950/40 p-4 flex flex-col gap-5 overflow-y-auto shrink-0">
             <div class="flex flex-col gap-1.5">
-                <label for="search" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Search Engine</label>
-                <input type="text" id="search" placeholder="Search by number or title..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-sky-500 transition placeholder:text-slate-600">
+                <label for="search" class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Search Matrix</label>
+                <div class="relative">
+                    <input type="text" id="search" placeholder="Search ID or challenge title..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30 transition placeholder:text-slate-600 font-medium">
+                </div>
             </div>
 
-            <!-- Numeric Range Optimization Filter -->
             <div class="flex flex-col gap-1.5">
-                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Filter Range ID</label>
+                <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Range Scope Index</label>
                 <div class="flex items-center gap-2">
-                    <input type="number" id="range-from" placeholder="From" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-sky-500 text-center">
-                    <span class="text-slate-600 text-xs">to</span>
-                    <input type="number" id="range-to" placeholder="To" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-sky-500 text-center">
+                    <input type="number" id="range-from" placeholder="Min ID" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-center focus:outline-none focus:border-sky-500 transition font-mono">
+                    <span class="text-slate-600 text-xs">-</span>
+                    <input type="number" id="range-to" placeholder="Max ID" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-center focus:outline-none focus:border-sky-500 transition font-mono">
                 </div>
                 <div class="flex gap-2 mt-1">
-                    <button id="apply-range" class="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-medium text-[11px] py-1.5 px-3 rounded-md transition cursor-pointer">Apply</button>
-                    <button id="reset-range" class="flex-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 font-medium text-[11px] py-1.5 px-3 rounded-md transition cursor-pointer">Reset All</button>
+                    <button id="apply-range" class="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-[10px] uppercase tracking-wider py-1.5 px-3 rounded-md transition-all shadow-md shadow-sky-600/10 active:scale-95 cursor-pointer">Apply Range</button>
+                    <button id="reset-range" class="flex-1 bg-slate-900 hover:bg-slate-800/80 border border-slate-800 text-slate-400 font-semibold text-[10px] uppercase tracking-wider py-1.5 px-3 rounded-md transition active:scale-95 cursor-pointer">Reset</button>
                 </div>
             </div>
 
-            <!-- Faceted Dynamic Topics Section -->
             <div class="flex flex-col gap-1.5">
-                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Filter Topics</label>
-                <div id="topic-group" class="flex flex-wrap gap-1.5"></div>
+                <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Filter Topics</label>
+                <div id="topic-group" class="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pr-1"></div>
             </div>
 
-            <!-- Faceted Dynamic Difficulty Badges Section -->
             <div class="flex flex-col gap-1.5">
-                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Difficulty Tier</label>
+                <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Difficulty Core</label>
                 <div id="diff-group" class="flex flex-wrap gap-1.5"></div>
             </div>
 
-            <hr class="border-slate-900 my-1">
-
-            <!-- Stream Flow Listing Area -->
-            <div class="flex flex-col gap-1.5 flex-1">
-                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Challenges Stream</label>
-                <div id="blank-state" class="hidden py-8 text-center text-xs text-slate-600 italic">No matching algorithms found.</div>
-                <div id="list-stream" class="flex flex-col gap-1 overflow-y-auto pr-1 flex-1 max-h-[350px]"></div>
+            <div class="flex flex-col gap-1.5 flex-1 min-h-0">
+                <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Algorithms Deck</label>
+                <div id="blank-state" class="hidden py-10 text-center text-xs text-slate-600 font-medium italic border border-dashed border-slate-900 rounded-xl bg-slate-900/10">No challenges matching parameters.</div>
+                <div id="list-stream" class="flex flex-col gap-1.5 overflow-y-auto pr-1 flex-1"></div>
             </div>
         </aside>
 
-        <!-- Right Side: Content Presenter Workspace Viewport -->
-        <main class="flex-1 flex flex-col bg-slate-950 overflow-hidden">
-            <!-- Dynamic Active Top Meta Segment -->
-            <div id="selected-meta" class="p-5 border-b border-slate-900 bg-slate-900/10 min-h-[73px]">
-                <div class="text-slate-500 italic text-sm py-1">Select an algorithmic matrix from the stream pipeline deck.</div>
+        <main class="flex-1 flex flex-col bg-slate-950 overflow-hidden relative">
+            <div id="selected-meta" class="p-6 border-b border-slate-900 bg-slate-900/5 min-h-[85px] flex items-center">
+                <div class="text-slate-500 font-medium italic text-xs tracking-wide flex items-center gap-2">
+                    <span class="animate-pulse h-1.5 w-1.5 rounded-full bg-slate-700"></span> Select a solution stream compiler node from the sidebar.
+                </div>
             </div>
 
-            <!-- Tab Switching Layout Buttons -->
-            <div class="flex border-b border-slate-900 bg-slate-900/30 px-3">
-                <button id="tab-sol" class="px-4 py-2.5 border-b-2 font-medium text-xs tracking-wide uppercase transition-all cursor-pointer">Code Solution</button>
-                <button id="tab-notes" class="px-4 py-2.5 border-b-2 font-medium text-xs tracking-wide uppercase transition-all cursor-pointer">Markdown Notes</button>
+            <div class="flex border-b border-slate-900 bg-slate-950 px-4 gap-2">
+                <button id="tab-sol" class="px-4 py-3 border-b-2 font-bold text-[10px] tracking-wider uppercase transition-all cursor-pointer">Code Solution</button>
+                <button id="tab-notes" class="px-4 py-3 border-b-2 font-bold text-[10px] tracking-wider uppercase transition-all cursor-pointer">Analysis Notes</button>
             </div>
 
-            <!-- Presentation Output Viewport Core Blocks -->
-            <div class="flex-1 overflow-y-auto p-6 position-relative">
-                <!-- Panel Solution Viewport Content Block -->
-                <div id="pane-sol" class="hidden flex flex-col gap-3 h-full">
-                    <div class="flex items-center justify-between bg-slate-900 px-4 py-2 rounded-t-lg border-t border-x border-slate-800">
-                        <span id="sol-filename" class="text-xs font-mono text-slate-400">solution.py</span>
-                        <button id="copy-solution-btn" class="flex items-center gap-1.5 hover:bg-slate-800 text-slate-400 hover:text-white px-2.5 py-1 rounded transition cursor-pointer">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                            <span class="text-[11px] font-semibold">Copy Code</span>
+            <div class="flex-1 overflow-hidden p-6 bg-slate-950 flex flex-col">
+                <div id="pane-sol" class="hidden flex flex-col h-full min-h-0">
+                    <div class="flex items-center justify-between bg-slate-900 px-4 py-2.5 rounded-t-xl border-t border-x border-slate-800/80 shadow-md">
+                        <span id="sol-filename" class="text-xs font-mono text-slate-400 select-text">solution.py</span>
+                        <button id="copy-solution-btn" class="flex items-center gap-1.5 hover:bg-slate-800 text-slate-400 hover:text-slate-100 px-3 py-1 rounded-md transition-all active:scale-95 cursor-pointer border border-transparent hover:border-slate-700 bg-slate-950/40">
+                            <span class="text-[10px] font-bold uppercase tracking-wider">Copy File</span>
                         </button>
                     </div>
-                    <pre class="bg-slate-900/60 p-4 border-b border-x border-slate-800 rounded-b-lg overflow-x-auto flex-1 font-mono"><code id="code-block" class="language-python"></code></pre>
+                    <pre class="bg-slate-900/40 p-5 border border-slate-800/60 rounded-b-xl overflow-auto flex-1 font-mono text-sm leading-relaxed select-text shadow-inner"><code id="code-block" class="language-python"></code></pre>
                 </div>
 
-                <!-- Panel Notes Viewport Markdown Presentation Block -->
-                <div id="pane-notes" class="hidden prose prose-invert max-w-none bg-slate-900/30 border border-slate-900 p-5 rounded-lg h-full overflow-y-auto text-sm leading-relaxed text-slate-300">
+                <div id="pane-notes" class="hidden bg-slate-900/10 border border-slate-900 p-6 rounded-xl h-full overflow-y-auto select-text prose prose-invert max-w-none text-xs leading-relaxed text-slate-300">
                     <div id="markdown-block"></div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- External Script Integration Components Linking Engine Pipeline -->
     <script src="data.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
-
