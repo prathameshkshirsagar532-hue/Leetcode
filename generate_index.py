@@ -5,23 +5,22 @@ from concurrent.futures import ThreadPoolExecutor
 EXCLUDE_DIRS = {'.git', '.github', '.vscode', 'node_modules'}
 
 def process_folder(folder_name):
-    """Har folder ko super fast processing ke liye function"""
     if os.path.isdir(folder_name) and folder_name not in EXCLUDE_DIRS and not folder_name.startswith('.'):
         parts = folder_name.split('_', 3)
         if len(parts) >= 4:
-            if parts[0].isdigit():
+            q_num_str = parts[0]
+            if q_num_str.isdigit():
                 try:
-                    q_num_int = int(parts[0])
+                    return {
+                        "number": q_num_str,
+                        "num_int": int(q_num_str),
+                        "topic": parts[1],
+                        "difficulty": parts[2],
+                        "title": parts[3].replace('_', ' '),
+                        "path": folder_name.replace('\\', '/')
+                    }
                 except (ValueError, IndexError):
-                    q_num_int = 9999
-                return {
-                    "number": parts[0],
-                    "num_int": q_num_int,
-                    "topic": parts[1],
-                    "difficulty": parts[2],
-                    "title": parts[3].replace('_', ' '),
-                    "path": folder_name.replace('\\', '/')
-                }
+                    pass
     return None
 
 def build_index():
@@ -32,8 +31,15 @@ def build_index():
     questions = [r for r in results if r is not None]
     questions.sort(key=lambda x: x['num_int'])
     
-    # Base layout header string configuration
-    html_start = """<!DOCTYPE html>
+    # Sirf raw data file generate hogi, koi heavy HTML loading nahi!
+    js_content = f"const rawQuestionsData = {json.dumps(questions)};"
+    with open('data.js', 'w', encoding='utf-8') as f:
+        f.write(js_content)
+    print(f"⚡ Success! {len(questions)} questions indexed in data.js")
+
+if __name__ == "__main__":
+    build_index()
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -71,11 +77,8 @@ def build_index():
 </head>
 <body>
     <h1>🚀 My State-Saved Coding Vault</h1>
-"""
-
-    html_stats = '<div class="stats">Showing <span id="displayed-count" style="color: #58a6ff; font-weight: bold;">0</span> of <span id="total-count">' + str(len(questions)) + '</span> Questions</div>'
-
-    html_end = """
+    <div class="stats">Showing <span id="displayed-count" style="color: #58a6ff; font-weight: bold;">0</span> of <span id="total-count">0</span> Questions</div>
+    
     <div class="filter-section">
         <div class="filter-group-title">🎯 Set Question Range</div>
         <div class="range-container">
@@ -104,15 +107,19 @@ def build_index():
         </thead>
         <tbody id="table-body"></tbody>
     </table>
-    <script>
-"""    html_js_data = "const data = " + json.dumps(questions) + ";\n"
 
-    html_js_logic = """        let filteredData = [...data];
+    <!-- Python dwara generated dynamic data load karna -->
+    <script src="data.js"></script>
+    <script>
+        const data = typeof rawQuestionsData !== 'undefined' ? rawQuestionsData : [];
+        let filteredData = [...data];
         let visibleCount = 50; 
+
         const tbody = document.getElementById('table-body');
         const searchInput = document.getElementById('search');
         const fromInput = document.getElementById('range-from');
         const toInput = document.getElementById('range-to');
+
         const topics = [...new Set(data.map(item => item.topic))].sort();
         const difficulties = [...new Set(data.map(item => item.difficulty))].sort();
         
@@ -122,38 +129,16 @@ def build_index():
         function saveState() {
             const selectedTopics = Array.from(document.querySelectorAll('.topic-cb:checked')).map(cb => cb.value);
             const selectedDiffs = Array.from(document.querySelectorAll('.diff-cb:checked')).map(cb => cb.value);
-            const state = {
-                search: searchInput.value,
-                from: fromInput.value,
-                to: toInput.value,
-                topics: selectedTopics,
-                diffs: selectedDiffs
-            };
-            localStorage.setItem('codingVaultState', JSON.stringify(state));
+            localStorage.setItem('codingVaultState', JSON.stringify({
+                search: searchInput.value, from: fromInput.value, to: toInput.value, topics: selectedTopics, diffs: selectedDiffs
+            }));
         }
         function loadState() {
-            const savedState = localStorage.getItem('codingVaultState');
-            if (!savedState) return;
-            const state = JSON.parse(savedState);
-            searchInput.value = state.search || '';
-            fromInput.value = state.from || '';
-            toInput.value = state.to || '';
-            if (state.topics) {
-                state.topics.forEach(t => {
-                    const cb = document.querySelector(`.topic-cb[value="${t}"]`);
-                    if (cb) {
-                        cb.checked = true;
-                        const lbl = document.getElementById(`lbl-topic-${t}`);
-                        if (lbl) lbl.classList.add('active');
-                    }});}
-            if (state.diffs) {
-                state.diffs.forEach(d => {
-                    const cb = document.querySelector(`.diff-cb[value="${d}"]`);
-                    if (cb) {
-                        cb.checked = true;
-                        const lbl = document.getElementById(`lbl-diff-${d}`);
-                        if (lbl) lbl.classList.add('active');
-                    }});}
+            const state = JSON.parse(localStorage.getItem('codingVaultState'));
+            if (!state) return;
+            searchInput.value = state.search || ''; fromInput.value = state.from || ''; toInput.value = state.to || '';
+            if (state.topics) state.topics.forEach(t => { const cb = document.querySelector(`.topic-cb[value="${t}"]`); if (cb) { cb.checked = true; document.getElementById(`lbl-topic-${t}`).classList.add('active'); }});
+            if (state.diffs) state.diffs.forEach(d => { const cb = document.querySelector(`.diff-cb[value="${d}"]`); if (cb) { cb.checked = true; document.getElementById(`lbl-diff-${d}`).classList.add('active'); }});
         }
         function renderTable() {
             const itemsToRender = filteredData.slice(0, visibleCount);
@@ -167,7 +152,7 @@ def build_index():
                 </tr>
             `).join('');
             document.getElementById('displayed-count').innerText = itemsToRender.length;
-            document.getElementById('total-count').innerText = filteredData.length;
+            document.getElementById('total-count').innerText = data.length;
         }
         function filterData() {
             const searchVal = searchInput.value.toLowerCase().trim();
@@ -176,22 +161,19 @@ def build_index():
             const fromNum = parseInt(fromInput.value) || 0;
             const toNum = parseInt(toInput.value) || Infinity;
             filteredData = data.filter(item => {
-                const matchesSearch = item.number.includes(searchVal) || item.title.toLowerCase().includes(searchVal);
-                const matchesTopic = selectedTopics.length === 0 || selectedTopics.includes(item.topic);
-                const matchesDiff = selectedDiffs.length === 0 || selectedDiffs.includes(item.difficulty);
-                const matchesRange = item.num_int >= fromNum && item.num_int <= toNum;
-                return matchesSearch && matchesTopic && matchesDiff && matchesRange;
+                return (item.number.includes(searchVal) || item.title.toLowerCase().includes(searchVal)) &&
+                       (selectedTopics.length === 0 || selectedTopics.includes(item.topic)) &&
+                       (selectedDiffs.length === 0 || selectedDiffs.includes(item.difficulty)) &&
+                       (item.num_int >= fromNum && item.num_int <= toNum);
             });
-            visibleCount = 50; 
-            renderTable();
-            saveState();
+            visibleCount = 50; renderTable(); saveState();
         }
         document.querySelectorAll('.checkbox-container').forEach(container => {
             container.addEventListener('click', (e) => {
                 const label = e.target.closest('.checkbox-label');
                 if (!label) return;
                 const cb = label.querySelector('input');
-                if (e.target !== cb) { cb.checked = !cb.checked; }
+                if (e.target !== cb) cb.checked = !cb.checked;
                 label.classList.toggle('active', cb.checked);
                 filterData();
             });
@@ -206,28 +188,13 @@ def build_index():
             fromInput.value = ''; toInput.value = ''; searchInput.value = '';
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
             document.querySelectorAll('.checkbox-label').forEach(lbl => lbl.classList.remove('active'));
-            localStorage.removeItem('codingVaultState');
-            filterData();
+            localStorage.removeItem('codingVaultState'); filterData();
         });
         function debounce(func, delay) {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), delay);
-            };
+            let timeout; return function(...args) { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), delay); };
         }
         searchInput.addEventListener('input', debounce(filterData, 150));
-        loadState();  
-        filterData(); 
+        loadState(); filterData(); 
     </script>
 </body>
 </html>
-"""
-
-    full_html = html_start + html_stats + html_end + html_js_data + html_js_logic
-    with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(full_html)
-    print("⚡ Stable dashboard generated without any python syntax bugs!")
-
-if __name__ == "__main__":
-    build_index()
