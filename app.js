@@ -47,7 +47,6 @@ function debounce(func, wait) {
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
-
 window.addEventListener('DOMContentLoaded', () => {
     if (elements.totalCount) elements.totalCount.textContent = state.dataset.length;
     buildFilterFacets();
@@ -95,7 +94,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (elements.tabSol) elements.tabSol.addEventListener('click', () => switchPaneTab('sol'));
     if (elements.tabNotes) elements.tabNotes.addEventListener('click', () => switchPaneTab('notes'));
 });
-
 function buildFilterFacets() {
     const topics = new Set(); const diffs = new Set();
     state.dataset.forEach(item => {
@@ -195,7 +193,6 @@ function renderListStream(items) {
     });
     elements.listStream.appendChild(fragment);
 }
-
 function selectArchItem(item) {
     if (!item) return;
     document.querySelectorAll('[id^="q-row-"]').forEach(row => {
@@ -215,49 +212,39 @@ function selectArchItem(item) {
     if (elements.selectedMeta) {
         elements.selectedMeta.innerHTML = `
             <div class="flex items-center gap-3">
-      // Metadata, Active Row Selection, aur Highlight.js Render Block
-if (elements.selectedMeta) {
-    elements.selectedMeta.innerHTML = `
-        <div class="flex items-center gap-3">
-            <span class="text-lg font-mono font-black text-slate-400">#${item.number}</span>
-            <div>
-                <h2 class="text-base font-bold text-white leading-tight">${item.title}</h2>
-                <p class="text-xs text-slate-500 font-medium mt-0.5">${item.topic || ''}</p>
+                <span class="text-lg font-mono font-black text-slate-400">#${item.number}</span>
+                <div>
+                    <h2 class="text-base font-bold text-white leading-tight">${item.title}</h2>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">${item.topic || ''}</p>
+                </div>
             </div>
-        </div>
-    `;
-}
-
-if (elements.codeBlock && item.code) {
-    elements.solFilename.textContent = item.filename || `solution.${item.extension || 'py'}`;
-    elements.codeBlock.className = '';
-    const targetLangClass = LANGUAGE_CLASS_MAP[item.extension] || 'language-plaintext';
-    elements.codeBlock.classList.add(targetLangClass, 'text-xs', 'font-mono');
-    elements.codeBlock.textContent = item.code;
-    
-    if (typeof hljs !== 'undefined') {
-        hljs.highlightElement(elements.codeBlock);
+        `;
     }
-} else if (elements.codeBlock) {
-    elements.codeBlock.textContent = '// No code solution provided.';
-}
 
-if (elements.markdownBlock) {
-    if (item.notes) {
-        elements.markdownBlock.innerHTML = typeof marked !== 'undefined' ? marked.parse(item.notes) : item.notes;
-    } else {
-        elements.markdownBlock.innerHTML = '<p class="text-slate-500 italic text-sm">No notes compiled for this challenge.</p>';
+    if (elements.codeBlock && item.code) {
+        elements.solFilename.textContent = item.filename || `solution.${item.extension || 'py'}`;
+        elements.codeBlock.className = ''; 
+        const targetLangClass = LANGUAGE_CLASS_MAP[item.extension] || 'language-plaintext';
+        elements.codeBlock.classList.add(targetLangClass, 'text-xs', 'font-mono');
+        elements.codeBlock.textContent = item.code;
+        if (typeof hljs !== 'undefined') hljs.highlightElement(elements.codeBlock);
+    } else if (elements.codeBlock) {
+        elements.codeBlock.textContent = '// No code solution provided.';
     }
+
+    if (elements.markdownBlock) {
+        if (item.notes) {
+            elements.markdownBlock.innerHTML = typeof marked !== 'undefined' ? marked.parse(item.notes) : item.notes;
+        } else {
+            elements.markdownBlock.innerHTML = '<p class="text-slate-500 italic text-sm">No notes compiled for this challenge.</p>';
+        }
+    }
+    switchPaneTab(state.activeTab);
 }
 
-switchPaneTab(state.activeTab);
-
-
-// Code Solution aur Markdown Notes Switch Tab Block
 function switchPaneTab(tabKey) {
     state.activeTab = tabKey;
     localStorage.setItem('dashboard_last_tab', tabKey);
-    
     const activeTabStyle = "border-sky-500 text-sky-400 bg-slate-800/40";
     const inactiveTabStyle = "border-transparent text-slate-400 hover:text-slate-300 hover:bg-slate-900/40";
 
@@ -274,25 +261,16 @@ function switchPaneTab(tabKey) {
     }
 }
 
-
-// Copy to Clipboard Automation Button Block
 function injectCopyButtonEngine() {
     const copyBtn = document.getElementById('copy-solution-btn');
     if (!copyBtn || !elements.codeBlock) return;
-    
     copyBtn.addEventListener('click', async () => {
         try {
             await navigator.clipboard.writeText(elements.codeBlock.textContent);
             const originalHTML = copyBtn.innerHTML;
             copyBtn.innerHTML = `<span class="text-[11px] text-emerald-400 font-semibold">Copied!</span>`;
             copyBtn.disabled = true;
-            
-            setTimeout(() => { 
-                copyBtn.innerHTML = originalHTML; 
-                copyBtn.disabled = false; 
-            }, 2000);
-        } catch (err) { 
-            console.error(err); 
-        }
+            setTimeout(() => { copyBtn.innerHTML = originalHTML; copyBtn.disabled = false; }, 2000);
+        } catch (err) { console.error(err); }
     });
 }
