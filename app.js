@@ -1,3 +1,4 @@
+// High-Velocity Application State Interface
 let state = {
     dataset: typeof rawQuestionsData !== 'undefined' ? rawQuestionsData : [],
     searchQuery: "",
@@ -9,6 +10,7 @@ let state = {
     activeTab: localStorage.getItem('dashboard_last_tab') || 'sol'
 };
 
+// Cached System DOM References
 const elements = {
     search: document.getElementById('search'),
     rangeFrom: document.getElementById('range-from'),
@@ -45,7 +47,6 @@ function debounce(func, wait) {
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
-
 window.addEventListener('DOMContentLoaded', () => {
     if (elements.totalCount) elements.totalCount.textContent = state.dataset.length;
     buildFilterFacets();
@@ -93,7 +94,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (elements.tabSol) elements.tabSol.addEventListener('click', () => switchPaneTab('sol'));
     if (elements.tabNotes) elements.tabNotes.addEventListener('click', () => switchPaneTab('notes'));
 });
-
 function buildFilterFacets() {
     const topics = new Set(); const diffs = new Set();
     state.dataset.forEach(item => {
@@ -193,7 +193,6 @@ function renderListStream(items) {
     });
     elements.listStream.appendChild(fragment);
 }
-
 function selectArchItem(item) {
     if (!item) return;
     document.querySelectorAll('[id^="q-row-"]').forEach(row => {
@@ -209,49 +208,43 @@ function selectArchItem(item) {
 
     state.selectedId = item.number;
     localStorage.setItem('dashboard_last_q_num', item.number);
-// Metadata, Highlighting, aur Code Block Core System Pipeline
-if (elements.selectedMeta) {
-    elements.selectedMeta.innerHTML = `
-        <div class="flex items-center gap-3 animate-fade-in">
-            <div class="h-10 w-10 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center font-mono font-black text-xs text-sky-400 shadow-inner">#${item.number}</div>
-            <div>
-                <h2 class="text-sm font-extrabold text-white tracking-wide leading-tight">${item.title}</h2>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">${item.topic || 'General Matrix'}</p>
+
+    if (elements.selectedMeta) {
+        elements.selectedMeta.innerHTML = `
+            <div class="flex items-center gap-3 animate-fade-in">
+                <div class="h-10 w-10 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center font-mono font-black text-xs text-sky-400 shadow-inner">#${item.number}</div>
+                <div>
+                    <h2 class="text-sm font-extrabold text-white tracking-wide leading-tight">${item.title}</h2>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">${item.topic || 'General Matrix'}</p>
+                </div>
             </div>
-        </div>
-    `;
-}
-
-if (elements.codeBlock && item.code) {
-    elements.solFilename.textContent = item.filename || `solution.${item.extension || 'py'}`;
-    elements.codeBlock.className = '';
-    const targetLangClass = LANGUAGE_CLASS_MAP[item.extension] || 'language-plaintext';
-    elements.codeBlock.classList.add(targetLangClass);
-    elements.codeBlock.textContent = item.code;
-    
-    if (typeof hljs !== 'undefined') {
-        hljs.highlightElement(elements.codeBlock);
+        `;
     }
-} else if (elements.codeBlock) {
-    elements.codeBlock.textContent = '// No code solution compiled for this challenge node.';
-}
 
-if (elements.markdownBlock) {
-    if (item.notes) {
-        elements.markdownBlock.innerHTML = typeof marked !== 'undefined' ? marked.parse(item.notes) : item.notes;
-    } else {
-        elements.markdownBlock.innerHTML = '<div class="text-slate-600 italic font-medium py-2">No structural analysis notes cataloged for this workspace node.</div>';
+    if (elements.codeBlock && item.code) {
+        elements.solFilename.textContent = item.filename || `solution.${item.extension || 'py'}`;
+        elements.codeBlock.className = ''; 
+        const targetLangClass = LANGUAGE_CLASS_MAP[item.extension] || 'language-plaintext';
+        elements.codeBlock.classList.add(targetLangClass);
+        elements.codeBlock.textContent = item.code;
+        if (typeof hljs !== 'undefined') hljs.highlightElement(elements.codeBlock);
+    } else if (elements.codeBlock) {
+        elements.codeBlock.textContent = '// No code solution compiled for this challenge node.';
     }
+
+    if (elements.markdownBlock) {
+        if (item.notes) {
+            elements.markdownBlock.innerHTML = typeof marked !== 'undefined' ? marked.parse(item.notes) : item.notes;
+        } else {
+            elements.markdownBlock.innerHTML = '<div class="text-slate-600 italic font-medium py-2">No structural analysis notes cataloged for this workspace node.</div>';
+        }
+    }
+    switchPaneTab(state.activeTab);
 }
 
-switchPaneTab(state.activeTab);
-
-
-// Active Solution aur Analysis Notes Viewport Switch Tab System
 function switchPaneTab(tabKey) {
     state.activeTab = tabKey;
     localStorage.setItem('dashboard_last_tab', tabKey);
-    
     const activeTabStyle = "border-sky-500 text-sky-400 bg-slate-900/30";
     const inactiveTabStyle = "border-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-900/10";
 
@@ -268,107 +261,16 @@ function switchPaneTab(tabKey) {
     }
 }
 
-
-// Clipboard Async Engine Factory Button Controller
 function injectCopyButtonEngine() {
     const copyBtn = document.getElementById('copy-solution-btn');
     if (!copyBtn || !elements.codeBlock) return;
-    
     copyBtn.addEventListener('click', async () => {
         try {
             await navigator.clipboard.writeText(elements.codeBlock.textContent);
             const originalHTML = copyBtn.innerHTML;
             copyBtn.innerHTML = `<span class="text-[10px] text-emerald-400 font-extrabold tracking-widest uppercase">Copied!</span>`;
             copyBtn.disabled = true;
-            
-            setTimeout(() => { 
-                copyBtn.innerHTML = originalHTML; 
-                copyBtn.disabled = false; 
-            }, 2000);
-        } catch (err) { 
-            console.error(err); 
-        }
-    });
-}
-
-// Metadata, Highlighting, aur Code Block Core System Pipeline
-if (elements.selectedMeta) {
-    elements.selectedMeta.innerHTML = `
-        <div class="flex items-center gap-3 animate-fade-in">
-            <div class="h-10 w-10 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center font-mono font-black text-xs text-sky-400 shadow-inner">#${item.number}</div>
-            <div>
-                <h2 class="text-sm font-extrabold text-white tracking-wide leading-tight">${item.title}</h2>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">${item.topic || 'General Matrix'}</p>
-            </div>
-        </div>
-    `;
-}
-
-if (elements.codeBlock && item.code) {
-    elements.solFilename.textContent = item.filename || `solution.${item.extension || 'py'}`;
-    elements.codeBlock.className = '';
-    const targetLangClass = LANGUAGE_CLASS_MAP[item.extension] || 'language-plaintext';
-    elements.codeBlock.classList.add(targetLangClass);
-    elements.codeBlock.textContent = item.code;
-    
-    if (typeof hljs !== 'undefined') {
-        hljs.highlightElement(elements.codeBlock);
-    }
-} else if (elements.codeBlock) {
-    elements.codeBlock.textContent = '// No code solution compiled for this challenge node.';
-}
-
-if (elements.markdownBlock) {
-    if (item.notes) {
-        elements.markdownBlock.innerHTML = typeof marked !== 'undefined' ? marked.parse(item.notes) : item.notes;
-    } else {
-        elements.markdownBlock.innerHTML = '<div class="text-slate-600 italic font-medium py-2">No structural analysis notes cataloged for this workspace node.</div>';
-    }
-}
-
-switchPaneTab(state.activeTab);
-
-
-// Active Solution aur Analysis Notes Viewport Switch Tab System
-function switchPaneTab(tabKey) {
-    state.activeTab = tabKey;
-    localStorage.setItem('dashboard_last_tab', tabKey);
-    
-    const activeTabStyle = "border-sky-500 text-sky-400 bg-slate-900/30";
-    const inactiveTabStyle = "border-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-900/10";
-
-    if (tabKey === 'sol') {
-        if (elements.paneSol) elements.paneSol.classList.remove('hidden');
-        if (elements.paneNotes) elements.paneNotes.classList.add('hidden');
-        if (elements.tabSol) elements.tabSol.className = `px-4 py-3 border-b-2 font-bold text-[10px] tracking-wider uppercase transition-all cursor-pointer ${activeTabStyle}`;
-        if (elements.tabNotes) elements.tabNotes.className = `px-4 py-3 border-b-2 font-bold text-[10px] tracking-wider uppercase transition-all cursor-pointer ${inactiveTabStyle}`;
-    } else {
-        if (elements.paneSol) elements.paneSol.classList.add('hidden');
-        if (elements.paneNotes) elements.paneNotes.classList.remove('hidden');
-        if (elements.tabSol) elements.tabSol.className = `px-4 py-3 border-b-2 font-bold text-[10px] tracking-wider uppercase transition-all cursor-pointer ${inactiveTabStyle}`;
-        if (elements.tabNotes) elements.tabNotes.className = `px-4 py-3 border-b-2 font-bold text-[10px] tracking-wider uppercase transition-all cursor-pointer ${activeTabStyle}`;
-    }
-}
-
-
-// Clipboard Async Engine Factory Button Controller
-function injectCopyButtonEngine() {
-    const copyBtn = document.getElementById('copy-solution-btn');
-    if (!copyBtn || !elements.codeBlock) return;
-    
-    copyBtn.addEventListener('click', async () => {
-        try {
-            await navigator.clipboard.writeText(elements.codeBlock.textContent);
-            const originalHTML = copyBtn.innerHTML;
-            copyBtn.innerHTML = `<span class="text-[10px] text-emerald-400 font-extrabold tracking-widest uppercase">Copied!</span>`;
-            copyBtn.disabled = true;
-            
-            setTimeout(() => { 
-                copyBtn.innerHTML = originalHTML; 
-                copyBtn.disabled = false; 
-            }, 2000);
-        } catch (err) { 
-            console.error(err); 
-        }
+            setTimeout(() => { copyBtn.innerHTML = originalHTML; copyBtn.disabled = false; }, 2000);
+        } catch (err) { console.error(err); }
     });
 }
