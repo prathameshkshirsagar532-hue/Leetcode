@@ -6,9 +6,11 @@
 
 ### 📊 LEETCODE PLATFORM STATS
 
-* 📈 **TOTAL QUESTIONS:** <mark>`3991`</mark>
-* 🧠 **DATA STRUCTURES & ALGORITHMS (DSA):** <mark>`2500`</mark> Questions
-* 🗄️ **SQL & DATABASES:** <mark>`1491`</mark> Questions
+| Category | Questions Count |
+| :--- | :--- |
+| 📈 **TOTAL QUESTIONS** | **`3991`** |
+| 🧠 **DATA STRUCTURES & ALGORITHMS (DSA)** | **`2500`** |
+| 🗄️ **SQL & DATABASES** | **`1491`** |
 
 ---
 
@@ -16,46 +18,52 @@
 
 ### 📦 [DATA STRUCTURES]
 
-* 🔹 <mark>**`Array`**</mark> — Basic linear indexing and traversal algorithms.
-* 🔹 <mark>**`String`**</mark> — Text processing, anagrams, and palindromes.
-* 🔹 <mark>**`LinkedList`**</mark> — Singly/Doubly linked lists and node manipulations.
-* 🔹 <mark>**`Matrix`**</mark> — 2D arrays, grids, and coordinate simulations.
-* 🔹 <mark>**`Stack`**</mark> — LIFO applications, valid parentheses, and history tracking.
-* 🔹 <mark>**`Queue`**</mark> — FIFO flows, level-order iterations, and buffers.
-* 🔹 <mark>**`HashTable`**</mark> — Key-Value pairing, quick lookups, and frequency maps.
-* 🔹 <mark>**`Heap`**</mark> — Priority queues, min/max extraction, and top-k questions.
-* 🔹 <mark>**`Tree`**</mark> — Hierarchical nodes, binary trees, and recursive traversals.
-* 🔹 <mark>**`BinarySearchTree`**</mark> — Sorted binary trees and properties.
-* 🔹 <mark>**`Graph`**</mark> — Nodes and edges, connectivity, and shortest paths.
-* 🔹 <mark>**`Trie`**</mark> — Prefix trees, dictionary matching, and autocomplete systems.
+| Topic Name | Description |
+| :--- | :--- |
+| 🔹 **`Array`** | Basic linear indexing and traversal algorithms. |
+| 🔹 **`String`** | Text processing, anagrams, and palindromes. |
+| 🔹 **`LinkedList`** | Singly/Doubly linked lists and node manipulations. |
+| 🔹 **`Matrix`** | 2D arrays, grids, and coordinate simulations. |
+| 🔹 **`Stack`** | LIFO applications, valid parentheses, and history tracking. |
+| 🔹 **`Queue`** | FIFO flows, level-order iterations, and buffers. |
+| 🔹 **`HashTable`** | Key-Value pairing, quick lookups, and frequency maps. |
+| 🔹 **`Heap`** | Priority queues, min/max extraction, and top-k questions. |
+| 🔹 **`Tree`** | Hierarchical nodes, binary trees, and recursive traversals. |
+| 🔹 **`BinarySearchTree`** | Sorted binary trees and properties. |
+| 🔹 **`Graph`** | Nodes and edges, connectivity, and shortest paths. |
+| 🔹 **`Trie`** | Prefix trees, dictionary matching, and autocomplete systems. |
 
 ---
 
 ### ⚙️ [ALGORITHMS & TECHNIQUES]
 
-* 🔸 <mark>**`TwoPointers`**</mark> — Dual index positioning for fast array reductions.
-* 🔸 <mark>**`SlidingWindow`**</mark> — Continuous subarrays or substrings parsing.
-* 🔸 <mark>**`BinarySearch`**</mark> — Logarithmic search on sorted arrays.
-* 🔸 <mark>**`Sorting`**</mark> — Custom sequencing and elements ordering.
-* 🔸 <mark>**`BitManipulation`**</mark> — Low-level binary logic, XOR operations.
-* 🔸 <mark>**`Recursion`**</mark> — Self-invoking logic chains and call stacks.
-* 🔸 <mark>**`Backtracking`**</mark> — State restoration, combinations, and exhaustive search.
-* 🔸 <mark>**`Greedy`**</mark> — Local optimal decisions for global optimizations.
-* 🔸 <mark>**`DynamicProgramming`**</mark> — Memoization and sub-problem storage.
-* 🔸 <mark>**`Math`**</mark> — Geometric layouts, simulation, and analytical numbers.
+| Topic Name | Description |
+| :--- | :--- |
+| 🔸 **`TwoPointers`** | Dual index positioning for fast array reductions. |
+| 🔸 **`SlidingWindow`** | Continuous subarrays or substrings parsing. |
+| 🔸 **`BinarySearch`** | Logarithmic search on sorted arrays. |
+| 🔸 **`Sorting`** | Custom sequencing and elements ordering. |
+| 🔸 **`BitManipulation`** | Low-level binary logic, XOR operations. |
+| 🔸 **`Recursion`** | Self-invoking logic chains and call stacks. |
+| 🔸 **`Backtracking`** | State restoration, combinations, and exhaustive search. |
+| 🔸 **`Greedy`** | Local optimal decisions for global optimizations. |
+| 🔸 **`DynamicProgramming`** | Memoization and sub-problem storage. |
+| 🔸 **`Math`** | Geometric layouts, simulation, and analytical numbers. |
 
 ---
 
 ### 🚀 [ADVANCED TOPICS]
 
-* ▪️ <mark>**`DivideAndConquer`**</mark> — Problem splitting and dynamic merges.
-* ▪️ <mark>**`PrefixSum`**</mark> — Cumulative indexing for quick interval range sums.
-* ▪️ <mark>**`MonotonicStack`**</mark> — Single-direction ordered arrays lookups.
-* ▪️ <mark>**`MonotonicQueue`**</mark> — Ordered sliding queues adjustments.
-* ▪️ <mark>**`UnionFind`**</mark> — Disjoint sets, cluster grouping, and loop detection.
-* ▪️ <mark>**`SegmentTree`**</mark> — Dynamic interval querying and range modifications.
-* ▪️ <mark>**`BinaryIndexedTree`**</mark> — Fenwick trees for efficient updates.
-* ▪️ <mark>**`TopologicalSort`**</mark> — Dependency graphs linear ordering.
-* ▪️ <mark>**`GameTheory`**</mark> — Minimax logic, win/loss strategy evaluation.
-* ▪️ <mark>**`Database`**</mark> — Relational queries, SQL groupings, and data filtering.
-* ▪️ <mark>**`Shell`**</mark> — Bash automation scripting, pipelines, and CLI text parsing.
+| Topic Name | Description |
+| :--- | :--- |
+| ▪️ **`DivideAndConquer`** | Problem splitting and dynamic merges. |
+| ▪️ **`PrefixSum`** | Cumulative indexing for quick interval range sums. |
+| ▪️ **`MonotonicStack`** | Single-direction ordered arrays lookups. |
+| ▪️ **`MonotonicQueue`** | Ordered sliding queues adjustments. |
+| ▪️ **`UnionFind`** | Disjoint sets, cluster grouping, and loop detection. |
+| ▪️ **`SegmentTree`** | Dynamic interval querying and range modifications. |
+| ▪️ **`BinaryIndexedTree`** | Fenwick trees for efficient updates. |
+| ▪️ **`TopologicalSort`** | Dependency graphs linear ordering. |
+| ▪️ **`GameTheory`** | Minimax logic, win/loss strategy evaluation. |
+| ▪️ **`Database`** | Relational queries, SQL groupings, and data filtering. |
+| ▪️ **`Shell`** | Bash automation scripting, pipelines, and CLI text parsing. |
