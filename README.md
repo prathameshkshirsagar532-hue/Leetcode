@@ -13,6 +13,26 @@
 | 🗄️ **SQL & DATABASES** | **`1491`** |
 
 ---
+---
+
+## 📐 FILE NAMING CONVENTION (FORMAT)
+
+Repository ko organized rakhne ke liye, har ek question ko is exact format me save karna hai:
+
+### 📑 Format Structure
+`[Question_Number]_[Topic_Name]_[Difficulty]_[Problem_Title].[Extension]`
+
+### 💡 Examples
+* **Python:** `0001_Array_Easy_Two_Sum.py`
+* **Java:** `0002_LinkedList_Medium_Add_Two_Numbers.java`
+* **JavaScript:** `0003_SlidingWindow_Medium_Longest_Substring.js`
+
+### 🔍 Rule Breakdown
+1. **`Question_Number`**: Hamesha 4 digits me likhein (Jaise `0001`, `0015`, `0102`).
+2. **`Topic_Name`**: Topics Index list me se exact naam chunein (Jaise `Array`, `LinkedList`, `DynamicProgramming`).
+3. **`Difficulty`**: Sawaal ke hisab se `Easy`, `Medium`, ya `Hard` likhein.
+4. **`Problem_Title`**: LeetCode ke title ke beech me spaces ki jagah Under score (`_`) ka use karein.
+
 
 ## 🛠️ LEETCODE TOPICS INDEX
 
