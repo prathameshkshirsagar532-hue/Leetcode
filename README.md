@@ -88,3 +88,4 @@ Repository ko organized rakhne ke liye, har ek question ko is exact format me sa
 | ▪️ **`Database`** | Relational queries, SQL groupings, and data filtering. |
 | ▪️ **`Shell`** | Bash automation scripting, pipelines, and CLI text parsing. |
 
+ 
